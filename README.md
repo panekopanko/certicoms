@@ -1,7 +1,3 @@
-# certicoms
-CertiComs provides an easy-to-use interface for finding the right Active Directory Certificate Services commands during pentests and CTFs.
-# CertiComs
-
 **AD CS Command Reference** - A cute interactive reference tool for Certipy & Certify commands.
 
 Inspired by [WADComs](https://wadcoms.github.io/), CertiComs provides an easy-to-use interface for finding the right Active Directory Certificate Services commands during pentests and CTFs.
