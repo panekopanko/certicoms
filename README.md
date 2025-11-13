@@ -36,7 +36,7 @@ Inspired by [WADComs](https://wadcoms.github.io/), CertiComs provides an easy-to
 ### Start the Web Server
 
 ```bash
-cd /home/kali/cyberspace/certicoms
+cd certicoms
 python3 -m http.server 8888
 ```
 
